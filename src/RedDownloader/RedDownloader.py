@@ -1,5 +1,5 @@
 """
-This is the main source file for RedDownloader Version 4.2.0 with it's primary
+This is the main source file for RedDownloader Version 5.0.0 with it's primary
 usage being downloading Reddit Posts i.e Image Posts , Videos , Gifs , Gallery
 Posts with additional support for Youtube links and Imgur Links.
 """
@@ -111,13 +111,10 @@ class Download:
         else:
             # Getting the absolute reddit post link
             self.postLink = requests.get(
-                "https://jackhammer.pythonanywhere.com/reddit/media/downloader",
-                params={"url": url},
-            ).text
-            try:
-                self.PostAuthor = GetPostAuthor(url)
-            except Exception as e:
-                self.Logger.LogInfo(e)
+                f"https://api.pushshift.io/reddit/submission/search?ids={url.split('/')[-3]}",
+            )
+            response = self.postLink.json()
+            self.postLink = response['data'][0]['url']
 
             if "v.redd.it" in self.postLink:  # if the post is a video
                 self.Logger.LogInfo("Detected Post Type: Video")
@@ -1044,9 +1041,9 @@ class DownloadGalleriesBySubreddit:
         return Titles
 
 
-class GetPostAuthor:
+def GetPostAuthor(url, verbose=True):
     """
-    This class is used to get the author of a post using the reddit api.
+    This method is used to get the author of a post using the reddit api.
 
     ...
 
@@ -1059,28 +1056,19 @@ class GetPostAuthor:
             console or not
             Set It To True (Default) to print the progress
             Set It To False to not print the progress
-
-    |Public Functions|
-
-        Get()
-            Return Type: str
-            Returns the author of the post.
     """
 
-    def __init__(self, url, verbose=True):
-        self.verbose = verbose
-        self.Logger = Logger(self.verbose)
-        try:
-            self.PostAuthor = requests.get(
-                "https://jackhammer.pythonanywhere.com/reddit/media/author",
-                params={"url": url},
-            ).text
-        except Exception as e:
-            self.Logger.LogInfo("Unable to fetch post author")
-            self.Logger.LogInfo(e)
-
-    def Get(self):
-        return self.PostAuthor
+    Loggers = Logger(verbose)
+    try:
+        postLink = requests.get(
+            f"https://api.pushshift.io/reddit/submission/search?ids={url.split('/')[-3]}",
+        )
+        response = postLink.json()
+        PostAuthor = response['data'][0]['author']
+        return PostAuthor
+    except Exception as e:
+        Loggers.LogInfo("Unable to fetch post author")
+        Loggers.LogInfo(e)
 
 
 class GetUser:
@@ -1249,16 +1237,16 @@ Below are some test lines to make sure all RedDownloader Features are working we
 out specific files or are facing issues with RedDownloader.
 """
 ## Test For Image Downloading
-#Download("https://www.reddit.com/r/memes/comments/xfhe9j/my_brain_haha_fuck_you_losah/", output="Image")
+#post = Download("https://www.reddit.com/r/memes/comments/xfhe9j/my_brain_haha_fuck_you_losah/", output="Image")
 
 ## Test For Video Downloading
-# Download("https://www.reddit.com/r/Unity2D/comments/xfadpb/trying_to_make_new_over_the_top_spells_for_our/", output="VideoTest")
+#Download("https://www.reddit.com/r/Unity2D/comments/xfadpb/trying_to_make_new_over_the_top_spells_for_our/", output="VideoTest")
 
 ## Test For Gallery Posts
-# Download("https://www.reddit.com/r/pics/comments/xevl7p/a_magnetic_knife_strip_felt_too_small_in_the/", output="Gallery")
+#Download("https://www.reddit.com/r/pics/comments/xevl7p/a_magnetic_knife_strip_felt_too_small_in_the/", output="Gallery")
 
 ## Test for Gif Files
-# Download("https://www.reddit.com/r/dankmemes/comments/xfmqqn/thats_what_facebook_said/", output="Gif")
+#Download("https://www.reddit.com/r/dankmemes/comments/xfmqqn/thats_what_facebook_said/", output="Gif")
 
 ## Test For Using Reddit API Features
 # DownloadBySubreddit("memes", 5, output="Subreddit API")
