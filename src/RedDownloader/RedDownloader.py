@@ -113,23 +113,22 @@ class Download:
             self.postLink = requests.get(
                 f"https://api.pushshift.io/reddit/submission/search?ids={url.split('/')[-3]}",
             )
-            response = self.postLink.json()
-            self.postLink = response['data'][0]['url']
+            self.response = self.postLink.json()['data'][0]['url']
 
-            if "v.redd.it" in self.postLink:  # if the post is a video
+            if "v.redd.it" in self.response:  # if the post is a video
                 self.Logger.LogInfo("Detected Post Type: Video")
                 self.mediaType = "v"
-                self.InitiateVideo(quality, self.postLink)
-            elif "i.redd.it" in self.postLink:  # if the post is an image
+                self.InitiateVideo(quality, self.response)
+            elif "i.redd.it" in self.response:  # if the post is an image
                 if (
-                    not self.postLink.endswith(".gif")
-                    and not self.postLink.endswith(".GIF")
-                    and not self.postLink.endswith(".gifv")
-                    and not self.postLink.endswith(".GIFV")
+                    not self.response.endswith(".gif")
+                    and not self.response.endswith(".GIF")
+                    and not self.response.endswith(".gifv")
+                    and not self.response.endswith(".GIFV")
                 ):
                     self.Logger.LogInfo("Detected Post Type: Image")
                     self.mediaType = "i"
-                    imageData = requests.get(self.postLink).content
+                    imageData = requests.get(self.response).content
                     file = open(f"{self.output}" + ".jpeg", "wb")
                     file.write(imageData)
                     file.close()
@@ -141,7 +140,7 @@ class Download:
                 else:
                     self.Logger.LogInfo("Detected Post Type: Gif")
                     self.mediaType = "gif"
-                    GifData = requests.get(self.postLink).content
+                    GifData = requests.get(self.response).content
                     file = open(f"{self.output}" + ".gif", "wb")
                     file.write(GifData)
                     file.close()
@@ -150,7 +149,7 @@ class Download:
                     )
                     if self.destination is not None:
                         shutil.move(f"{self.output}.gif", self.destination)
-            elif "/gallery/" in self.postLink:  # if the post is a gallery
+            elif "/gallery/" in self.response:  # if the post is a gallery
                 self.Logger.LogInfo("Detected Post Type: Gallery")
                 self.mediaType = "g"
                 if self.destination == None:
@@ -164,20 +163,21 @@ class Download:
                     pass
                 self.Logger.LogInfo("Fetching images from gallery")
                 # Fetching urls of all media in the post
-                self.GalleryPosts = requests.get(
-                    "https://jackhammer.pythonanywhere.com/reddit/media/gallery",
-                    params={"url": self.postLink},
-                )
-                posts = json.loads(self.GalleryPosts.content)
+                posts = []
+                for i in self.postLink.json()['data'][0]['media_metadata'].items():
+                    url = i[1]['p'][0]['u']
+                    url = url.split("?")[0].replace("preview", "i")
+                    posts.append(url)
+
                 self.GetGallery(posts)
 
-            elif "youtu.be" in self.postLink or "youtube.com" in self.postLink:
+            elif "youtu.be" in self.response or "youtube.com" in self.response:
                 self.Logger.LogInfo("Type Detected: Youtube Video")
                 self.mediaType = "yt"
 
                 try:
                     self.Logger.LogInfo("Downloading Youtube Video")
-                    yt = YouTube(self.postLink)
+                    yt = YouTube(self.response)
                     stream = yt.streams.filter(
                         progressive=True, file_extension="mp4"
                     ).order_by("resolution")[-1]
@@ -192,10 +192,10 @@ class Download:
                     self.Logger.LogInfo("Connection Error")
                     self.Logger.LogInfo(e)
 
-            elif "i.imgur.com" in self.postLink:
+            elif "i.imgur.com" in self.response:
                 self.Logger.LogInfo("Detected Post Type: Imgur Image")
                 self.mediaType = "imgur"
-                imageData = requests.get(self.postLink).content
+                imageData = requests.get(self.response).content
                 file = open(f"{self.output}" + ".jpeg", "wb")
                 file.write(imageData)
                 file.close()
@@ -203,7 +203,7 @@ class Download:
                 if self.destination is not None:
                     shutil.move(f"{self.output}.jpeg", self.destination)
 
-            elif "imgur.com" in self.postLink:
+            elif "imgur.com" in self.response:
                 self.Logger.LogInfo("Detected Post Type: Imgur Album")
                 self.Logger.LogInfo(
                     "Support for imgur album posts has not yet been added"
@@ -1237,7 +1237,7 @@ Below are some test lines to make sure all RedDownloader Features are working we
 out specific files or are facing issues with RedDownloader.
 """
 ## Test For Image Downloading
-#post = Download("https://www.reddit.com/r/memes/comments/xfhe9j/my_brain_haha_fuck_you_losah/", output="Image")
+#Download("https://www.reddit.com/r/memes/comments/xfhe9j/my_brain_haha_fuck_you_losah/", output="Image")
 
 ## Test For Video Downloading
 #Download("https://www.reddit.com/r/Unity2D/comments/xfadpb/trying_to_make_new_over_the_top_spells_for_our/", output="VideoTest")
@@ -1252,7 +1252,7 @@ out specific files or are facing issues with RedDownloader.
 # DownloadBySubreddit("memes", 5, output="Subreddit API")
 
 ## Test For Youtube Links
-# Download("https://www.reddit.com/r/videos/comments/xi89wf/this_guy_made_a_1hz_cpu_in_minecraft_to_run/", output="Youtube Video")
+Download("https://www.reddit.com/r/videos/comments/xi89wf/this_guy_made_a_1hz_cpu_in_minecraft_to_run/", output="Youtube Video")
 
 ## Test For Imgur Posts
-# Download("https://www.reddit.com/r/pics/comments/xbzjbv/my_grandparents_100_yearolddresser_prerestoration/",output="Imgur Image")
+Download("https://www.reddit.com/r/pics/comments/xbzjbv/my_grandparents_100_yearolddresser_prerestoration/",output="Imgur Image")
