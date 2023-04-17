@@ -1,6 +1,6 @@
 <div align="center">
     
-<img src= "https://raw.githubusercontent.com/JackhammerYT/RedDownloader/main/.github/logo.png" height=250px width=250px>
+<img src= "https://raw.githubusercontent.com/Jackhammer9/RedDownloader/main/.github/logo.png" height=250px width=250px>
     
 </div>
 <br><br>
@@ -16,26 +16,20 @@
 <div align = "center">
     
 
-![GitHub forks](https://img.shields.io/github/forks/JackhammerYT/RedDownloader?color=red&logo=Github&style=flat-square) ![GitHub watchers](https://img.shields.io/github/watchers/JackhammerYT/RedDownloader?logo=Github) ![GitHub Repo stars](https://img.shields.io/github/stars/JackhammerYT/RedDownloader?logo=Github) ![GitHub followers](https://img.shields.io/github/followers/JackhammerYT?logo=Github) 
+![GitHub forks](https://img.shields.io/github/forks/Jackhammer9/RedDownloader?color=red&logo=Github&style=flat-square) ![GitHub watchers](https://img.shields.io/github/watchers/Jackhammer9/RedDownloader?logo=Github) ![GitHub Repo stars](https://img.shields.io/github/stars/Jackhammer9/RedDownloader?logo=Github) ![GitHub followers](https://img.shields.io/github/followers/Jackhammer9?logo=Github) 
 
     
 </div>
 
 <div align = "center">
     
-![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/JackhammerYT/RedDownloader?logo=Github)  ![GitHub closed issues](https://img.shields.io/github/issues-closed/JackhammerYT/RedDownloader?color=255%2C255%2C0&logo=Github)![GitHub repo size](https://img.shields.io/github/repo-size/JackhammerYT/RedDownloader?logo=Github)![GitHub release (latest by date)](https://img.shields.io/github/v/release/JackhammerYT/RedDownloader?display_name=tag&logo=Github)
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/Jackhammer9/RedDownloader?logo=Github)  ![GitHub closed issues](https://img.shields.io/github/issues-closed/Jackhammer9/RedDownloader?color=255%2C255%2C0&logo=Github)![GitHub repo size](https://img.shields.io/github/repo-size/Jackhammer9/RedDownloader?logo=Github)![GitHub release (latest by date)](https://img.shields.io/github/v/release/Jackhammer9/RedDownloader?display_name=tag&logo=Github)
     
 </div>
 
 <div align = "center">
     
 ![PyPI - Downloads](https://img.shields.io/pypi/dm/RedDownloader?label=Pypi%20Downloads&logo=Pypi) ![PyPI](https://img.shields.io/pypi/v/RedDownloader?logo=pypi)
-    
-</div>
-
-<div align="center">
-    
-<img src="https://img.shields.io/badge/dynamic/json?style=flat&logo=reddit&logoColor=white&color=orange&label=Requests%20Handled&query=requests&url=https%3A%2F%2Fjackhammer.pythonanywhere.com%2FRedDownloader%2FRequests%2F">
     
 </div>
 <br>
@@ -265,11 +259,11 @@ Starting RedDownloader 4 you can download reddit posts which link to a youtube v
 
 Any Version previous to RedDownloader 4 would yield a ```Post Not Recoganized Error```
 
-<h1>New Features in RedDownloader 4.1.1:</h1>
+<h1>New Features in RedDownloader 4.2.0:</h1>
 <br>
 <h2>Verbose Enabling/Disabling [Silent Mode]</h2>
 
-Starting RedDownloader 4.1.2 you can disable verbose i.e the ability to download posts without logging anything to the console for a cleaner experience.
+Starting RedDownloader 4.2.0 you can disable verbose i.e the ability to download posts without logging anything to the console for a cleaner experience.
 By default Verbose is set to ```True``` That is all the progress is logged to console
 
 All Classes accept ```verbose``` as an argument so to disable verbose you can do:
@@ -277,13 +271,13 @@ All Classes accept ```verbose``` as an argument so to disable verbose you can do
 DownloadBySubreddit("memes", 5, output="Funny Memes" , verbose=False)
 ```
 
-Trying to use verbose with any version previous to RedDownloader 4.1.2 would yield a ```got an unexpected keyword argument``` error
+Trying to use verbose with any version previous to RedDownloader 4.2.0 would yield a ```got an unexpected keyword argument``` error
 
 
 <h1> Star History </h1>
 <br>
 <div align = "center">
 
-[![Star History Chart](https://api.star-history.com/svg?repos=JackhammerYT/RedDownloader&type=Date)](https://star-history.com/#JackhammerYT/RedDownloader&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=Jackhammer9/RedDownloader&type=Date)](https://star-history.com/#Jackhammer9/RedDownloader&Date)
 
 </div>
