@@ -8,6 +8,7 @@ Posts with additional support for Youtube links and Imgur Links.
 import urllib.request
 import json
 import os
+import time
 import shutil
 import logging
 
@@ -110,9 +111,12 @@ class Download:
             )
         else:
             # Getting the absolute reddit post link
+            split_url = url.split('/')[-3]
+            print(split_url , url)
             self.postLink = requests.get(
-                f"https://api.pushshift.io/reddit/submission/search?ids={url.split('/')[-3]}",
+                f"https://api.pushshift.io/reddit/submission/search?ids={split_url}",
             )
+            time.sleep(5)
             self.response = self.postLink.json()['data'][0]['url']
 
             if "v.redd.it" in self.response:  # if the post is a video
@@ -499,6 +503,9 @@ class DownloadBySubreddit:
             pass
         length = len(links)
         i = 1
+
+        links = [x.split("/")[-1] + "//" for x in links]
+
         try:
             for link in links:
                 self.Logger.LogInfo(f"Downloading Post {i} of {length}")
@@ -529,13 +536,13 @@ class DownloadBySubreddit:
     def GetPostAuthors(self):
         Authors = []
         for author in self.ProcessedLinks:
-            Authors.append(GetPostAuthor(author).Get())
+            Authors.append(GetPostAuthor(author))
         return Authors
 
     def GetPostTitles(self):
         Titles = []
         for title in self.ProcessedLinks:
-            Titles.append(GetPostTitle(title).Get())
+            Titles.append(GetPostTitle(title))
         return Titles
 
 
@@ -696,13 +703,13 @@ class DownloadImagesBySubreddit:
     def GetPostAuthors(self):
         Authors = []
         for author in self.ProcessedLinks:
-            Authors.append(GetPostAuthor(author).Get())
+            Authors.append(GetPostAuthor(author))
         return Authors
 
     def GetPostTitles(self):
         Titles = []
         for title in self.ProcessedLinks:
-            Titles.append(GetPostTitle(title).Get())
+            Titles.append(GetPostTitle(title))
         return Titles
 
 
@@ -864,13 +871,13 @@ class DownloadVideosBySubreddit:
     def GetPostAuthors(self):
         Authors = []
         for author in self.ProcessedLinks:
-            Authors.append(GetPostAuthor(author).Get())
+            Authors.append(GetPostAuthor(author))
         return Authors
 
     def GetPostTitles(self):
         Titles = []
         for title in self.ProcessedLinks:
-            Titles.append(GetPostTitle(title).Get())
+            Titles.append(GetPostTitle(title))
         return Titles
 
 
@@ -1031,13 +1038,13 @@ class DownloadGalleriesBySubreddit:
     def GetPostAuthors(self):
         Authors = []
         for author in self.ProcessedLinks:
-            Authors.append(GetPostAuthor(author).Get())
+            Authors.append(GetPostAuthor(author))
         return Authors
 
     def GetPostTitles(self):
         Titles = []
         for title in self.ProcessedLinks:
-            Titles.append(GetPostTitle(title).Get())
+            Titles.append(GetPostTitle(title))
         return Titles
 
 
@@ -1128,7 +1135,7 @@ class GetUser:
         return self.info
 
 
-class GetPostTitle:
+def GetPostTitle(url, verbose=True):
     """
     This class is used to get the title of a post using the reddit api.
 
@@ -1143,28 +1150,18 @@ class GetPostTitle:
             console or not
             Set It To True (Default) to print the progress
             Set It To False to not print the progress
-
-    |Public Functions|
-
-        Get()
-            Return Type: str
-            Returns the title of the post.
     """
-
-    def __init__(self, url, verbose=True):
-        self.verbose = verbose
-        self.Logger = Logger(self.verbose)
-        try:
-            self.PostTitle = requests.get(
-                "http://jackhammer.pythonanywhere.com/reddit/media/title",
-                params={"url": url},
-            ).text
-        except Exception as e:
-            self.Logger.LogInfo("Unable to fetch post title")
-            self.Logger.LogInfo(e)
-
-    def Get(self):
-        return self.PostTitle
+    Loggers= Logger(verbose)
+    try:
+        postLink = requests.get(
+            f"https://api.pushshift.io/reddit/submission/search?ids={url.split('/')[-3]}",
+        )
+        response = postLink.json()
+        PostTitle = response['data'][0]['title']
+        return PostTitle
+    except Exception as e:
+        Loggers.LogInfo("Unable to fetch post title")
+        Loggers.LogInfo(e)
 
 
 class GetPostAudio:
@@ -1197,9 +1194,10 @@ class GetPostAudio:
         self.Logger = Logger(self.verbose)
         self.url = url
         self.postLink = requests.get(
-            "https://jackhammer.pythonanywhere.com/reddit/media/downloader",
-            params={"url": self.url},
-        ).text
+    f"https://api.pushshift.io/reddit/submission/search?ids={url.split('/')[-3]}",
+            )
+        
+        self.postLink = self.postLink.json()['data'][0]['url']
         self.destination = destination
 
         doc = requests.get(self.postLink + "/DASH_audio.mp4")
@@ -1249,10 +1247,16 @@ out specific files or are facing issues with RedDownloader.
 #Download("https://www.reddit.com/r/dankmemes/comments/xfmqqn/thats_what_facebook_said/", output="Gif")
 
 ## Test For Using Reddit API Features
-# DownloadBySubreddit("memes", 5, output="Subreddit API")
+#DownloadBySubreddit("memes", 5, output="Subreddit API" , SortBy='top')
 
 ## Test For Youtube Links
-Download("https://www.reddit.com/r/videos/comments/xi89wf/this_guy_made_a_1hz_cpu_in_minecraft_to_run/", output="Youtube Video")
+#Download("https://www.reddit.com/r/videos/comments/xi89wf/this_guy_made_a_1hz_cpu_in_minecraft_to_run/", output="Youtube Video")
 
 ## Test For Imgur Posts
-Download("https://www.reddit.com/r/pics/comments/xbzjbv/my_grandparents_100_yearolddresser_prerestoration/",output="Imgur Image")
+#Download("https://www.reddit.com/r/pics/comments/xbzjbv/my_grandparents_100_yearolddresser_prerestoration/",output="Imgur Image")
+
+# Test For GetPostAudio class
+#GetPostAudio("https://www.reddit.com/r/Unity2D/comments/xfadpb/trying_to_make_new_over_the_top_spells_for_our/" , output='PostAudio')
+
+# Test For GetPostTitle function
+#print(GetPostTitle("https://www.reddit.com/r/Unity2D/comments/xfadpb/trying_to_make_new_over_the_top_spells_for_our/"))
