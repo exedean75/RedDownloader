@@ -24,4 +24,4 @@ setuptools.setup(
     packages=setuptools.find_packages(where="src"),
     install_requires=['requests' , 'tqdm==4.62.3' , 'moviepy', 'pytube'],
     python_requires=">=3.6",
-)
+)pip install RedDownloader
